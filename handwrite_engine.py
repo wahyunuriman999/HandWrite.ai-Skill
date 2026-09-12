@@ -4,7 +4,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 # 1. URL for handwriting font (Caveat)
-FONT_URL = "https://github.com/google/fonts/raw/main/ofl/caveat/Caveat-Regular.ttf"
+FONT_URL = "https://github.com/google/fonts/raw/main/ofl/caveat/Caveat%5Bwght%5D.ttf"
 FONT_PATH = "handwriting_font.ttf"
 
 def download_font():
