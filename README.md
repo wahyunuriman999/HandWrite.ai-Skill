@@ -2,6 +2,7 @@
   <h1>✍️ HandWrite.ai</h1>
   <p><b>A Universal AI Skill & Python Engine for Hyper-Realistic Handwriting Generation</b></p>
   
+  [![Build Status](https://github.com/wahyunuriman999/HandWrite.ai-Skill/actions/workflows/python-app.yml/badge.svg)](https://github.com/wahyunuriman999/HandWrite.ai-Skill/actions/workflows/python-app.yml)
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
   [![Python Version](https://img.shields.io/badge/python-3.8%2B-brightgreen.svg)](https://python.org)
   [![Pillow](https://img.shields.io/badge/PIL-Pillow-yellow.svg)](https://python-pillow.org/)
