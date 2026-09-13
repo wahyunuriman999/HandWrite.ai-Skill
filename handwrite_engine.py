@@ -33,11 +33,11 @@ def render_handwriting(text, style_options):
     
     # --- STYLE PROCESSING BASED ON USER INPUT ---
     # Font Size
-    font_size = 35
+    font_size = 50 # Default (Medium)
     if style_options['ukuran'] == '1':   # Besar / Large
-        font_size = 45
+        font_size = 65
     elif style_options['ukuran'] == '3': # Kecil / Small
-        font_size = 25
+        font_size = 35
         
     # Spacing
     line_spacing = 40
@@ -65,26 +65,28 @@ def render_handwriting(text, style_options):
     draw = ImageDraw.Draw(img)
     
     # Wrapping text to prevent overflow
-    max_chars_per_line = int(650 / (font_size * 0.45))
+    # Use font.getbbox to estimate text width better, but for simplicity a fixed ratio works okay.
+    # Adjusted ratio for the Caveat font which is quite condensed.
+    max_chars_per_line = int(650 / (font_size * 0.40))
     lines = textwrap.wrap(text, width=max_chars_per_line)
     
-    # Starting coordinates (Right of the red margin, just above the first blue line)
-    x_start = 100
-    y_start = 100 - font_size + (line_spacing // 3)
+    # Starting coordinates
+    x_start = 95 # Just slightly right of the red margin (which is at 80)
     
     # Pen color (Dark blue/black ink)
     pen_color = (15, 20, 40)
     
     for i, line in enumerate(lines):
-        y = y_start + (i * line_spacing)
+        # Y coordinate is exactly the blue line position (100, 100+spacing, etc.)
+        y_line = 100 + (i * line_spacing)
         
-        # Draw text
-        draw.text((x_start, y), line, font=font, fill=pen_color)
+        # Draw text anchored at left-baseline (ls)
+        draw.text((x_start, y_line), line, font=font, fill=pen_color, anchor="ls")
         
         # If Heavy Pressure is selected, redraw slightly offset
         if thickness == 1:
-            draw.text((x_start+1, y), line, font=font, fill=pen_color)
-            draw.text((x_start, y+1), line, font=font, fill=pen_color)
+            draw.text((x_start+1, y_line), line, font=font, fill=pen_color, anchor="ls")
+            draw.text((x_start, y_line+1), line, font=font, fill=pen_color, anchor="ls")
             
     # Save output
     output_path = "output_handwriting.jpg"
