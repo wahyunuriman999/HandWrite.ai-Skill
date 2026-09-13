@@ -15,15 +15,16 @@ def download_font():
 
 def create_lined_paper(width=800, height=1000, line_spacing=40):
     """Creates a realistic lined paper background."""
-    img = Image.new('RGB', (width, height), color=(250, 250, 245)) 
+    img = Image.new('RGB', (width, height), color=(248, 248, 242)) # Slightly yellowish/off-white
     draw = ImageDraw.Draw(img)
     
-    # Draw left margin (Red line)
-    draw.line([(80, 0), (80, height)], fill=(255, 120, 120), width=2)
+    # Draw left double margin (Red lines, typical in Indonesian notebooks)
+    draw.line([(80, 0), (80, height)], fill=(220, 100, 100), width=1)
+    draw.line([(85, 0), (85, height)], fill=(220, 100, 100), width=1)
     
-    # Draw horizontal lines (Blue notebook lines)
+    # Draw horizontal lines (Blue notebook lines, slightly transparent/lighter)
     for y in range(100, height, line_spacing):
-        draw.line([(0, y), (width, y)], fill=(150, 150, 220), width=1)
+        draw.line([(0, y), (width, y)], fill=(160, 170, 220), width=1)
         
     return img
 
@@ -62,32 +63,53 @@ def render_handwriting(text, style_options):
         
     # Create Canvas
     img = create_lined_paper(line_spacing=line_spacing)
-    draw = ImageDraw.Draw(img)
+    
+    # Create transparent text layer for ink blending
+    txt_layer = Image.new('RGBA', img.size, (255,255,255,0))
+    draw_txt = ImageDraw.Draw(txt_layer)
     
     # Wrapping text to prevent overflow
-    # Use font.getbbox to estimate text width better, but for simplicity a fixed ratio works okay.
-    # Adjusted ratio for the Caveat font which is quite condensed.
     max_chars_per_line = int(650 / (font_size * 0.40))
     lines = textwrap.wrap(text, width=max_chars_per_line)
     
-    # Starting coordinates
-    x_start = 95 # Just slightly right of the red margin (which is at 80)
+    # Pen color (Dark blue/black ink with slight transparency)
+    pen_color = (15, 20, 40, 240)
     
-    # Pen color (Dark blue/black ink)
-    pen_color = (15, 20, 40)
+    import random
     
     for i, line in enumerate(lines):
-        # Y coordinate is exactly the blue line position (100, 100+spacing, etc.)
         y_line = 100 + (i * line_spacing)
+        words = line.split(' ')
         
-        # Draw text anchored at left-baseline (ls)
-        draw.text((x_start, y_line), line, font=font, fill=pen_color, anchor="ls")
+        # Random starting margin for each line
+        current_x = 90 + random.randint(0, 8) 
         
-        # If Heavy Pressure is selected, redraw slightly offset
-        if thickness == 1:
-            draw.text((x_start+1, y_line), line, font=font, fill=pen_color, anchor="ls")
-            draw.text((x_start, y_line+1), line, font=font, fill=pen_color, anchor="ls")
+        for word in words:
+            # Jitter Y coordinate slightly for each word to simulate human imperfection
+            jitter_y = random.choice([-2, -1, 0, 1, 2])
             
+            draw_txt.text((current_x, y_line - jitter_y), word, font=font, fill=pen_color, anchor="ls")
+            
+            if thickness == 1:
+                draw_txt.text((current_x+1, y_line - jitter_y), word, font=font, fill=pen_color, anchor="ls")
+                
+            # Get word width
+            bbox = font.getbbox(word)
+            word_width = bbox[2] - bbox[0]
+            
+            # Randomize space between words
+            space_width = font.getbbox(' ')[2] - font.getbbox(' ')[0]
+            if space_width == 0: space_width = font_size // 4
+            
+            current_x += word_width + space_width + random.randint(-2, 5)
+            
+    # Apply slight blur to simulate ink spread onto paper
+    from PIL import ImageFilter
+    txt_layer = txt_layer.filter(ImageFilter.GaussianBlur(radius=0.4))
+    
+    # Composite
+    img = Image.alpha_composite(img.convert('RGBA'), txt_layer).convert('RGB')
+    
     # Save output
     output_path = "output_handwriting.jpg"
     img.save(output_path)

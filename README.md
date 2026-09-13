@@ -1,7 +1,7 @@
 # HandWrite.ai Skill
 
-![Example 1 (Cursive, Medium)](assets/example1_v2.jpg)
-![Example 2 (Print, Small, Heavy)](assets/example2_v2.jpg)
+![Example 1 (Cursive, Medium)](assets/example1_v3.jpg)
+![Example 2 (Print, Small, Heavy)](assets/example2_v3.jpg)
 
 **HandWrite.ai** is a universal AI skill (System Prompt) and Python backend engine designed to convert digital text into highly realistic handwriting on lined notebook paper. It avoids the common "alien text" pitfalls of standard AI Image Generators by using precise programmatic rendering or SVG generation.
 
